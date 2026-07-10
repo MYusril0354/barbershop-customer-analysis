@@ -1,0 +1,116 @@
+cells:
+  - kind: 1
+    languageId: markdown
+    value: Basic Agregation
+    metadata: {}
+  - kind: 2
+    languageId: sql
+    value: "-- showing the data schema\r
+
+      SELECT * FROM pelanggan LIMIT 5"
+    metadata: {}
+  - kind: 2
+    languageId: sql
+    value: "-- finding aggregation of female (p) and male (l) \r
+
+      SELECT\r
+
+      \    gender,\r
+
+      \    COUNT(*) total,\r
+
+      \    COUNT(*)*100.0/SUM(COUNT(*)) OVER() || '%' percent\r
+
+      FROM pelanggan\r
+
+      GROUP BY gender"
+    metadata: {}
+  - kind: 2
+    languageId: sql
+    value: "-- Making Pareto Chart of per layanan\r
+
+      \r
+
+      WITH freq_1 AS(\r
+
+      \    SELECT\r
+
+      \        layanan,\r
+
+      \        COUNT(*) freq\r
+
+      \    FROM pelanggan\r
+
+      \    GROUP BY layanan\r
+
+      \    ORDER BY freq DESC\r
+
+      ),\r
+
+      cumul_1 AS(\r
+
+      \    SELECT \r
+
+      \        layanan,\r
+
+      \        freq,\r
+
+      \        SUM(freq) OVER(ORDER BY freq DESC ROWS BETWEEN UNBOUNDED
+      PRECEDING AND CURRENT ROW) cumul,\r
+
+      \        SUM(freq) OVER() grand_total\r
+
+      \    FROM freq_1 \r
+
+      \    ORDER BY freq DESC\r
+
+      )\r
+
+      SELECT\r
+
+      \    layanan,\r
+
+      \    freq,\r
+
+      \    cumul*100.0/grand_total cumullative_percentage\r
+
+      FROM cumul_1"
+    metadata: {}
+  - kind: 2
+    languageId: sql
+    value: "-- Mencari Hari mana yang paling sering ada pelanggan\r
+
+      SELECT CASE strftime('%w', tanggal_kunjungan)\r
+
+      \          WHEN '0' THEN 'Minggu'\r
+
+      \          WHEN '1' THEN 'Senin'\r
+
+      \          WHEN '2' THEN 'Selasa'\r
+
+      \          WHEN '3' THEN 'Rabu'\r
+
+      \          WHEN '4' THEN 'Kamis'\r
+
+      \          WHEN '5' THEN 'Jumat'\r
+
+      \          WHEN '6' THEN 'Sabtu'\r
+
+      \          END AS Hari,\r
+
+      \       COUNT(*) AS total,\r
+
+      \       ROUND(COUNT(*)*100.00 /SUM(COUNT(*)) OVER(),2) || ' %' as
+      Prosentase\r
+
+      FROM pelanggan\r
+
+      GROUP BY Hari\r
+
+      ORDER BY Total DESC"
+    metadata: {}
+metadata:
+  conn:
+    id: 23d2f8ea26864590
+    name: databarber.db
+  database: main
