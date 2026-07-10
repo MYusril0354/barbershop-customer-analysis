@@ -65,6 +65,64 @@ cells:
     metadata: {}
   - kind: 2
     languageId: sql
+    value: "-- Generate Pendapatan per Gender\r
+
+      WITH col_biaya AS(\r
+
+      SELECT\r
+
+      \    *,\r
+
+      \    CASE layanan\r
+
+      \        WHEN 'Potong Rambut' THEN 30000\r
+
+      \        WHEN 'Cuci Rambut'   THEN 20000\r
+
+      \        WHEN 'Kreambath'     THEN 50000\r
+
+      \        ELSE  25000\r
+
+      \    END biaya\r
+
+      FROM pelanggan\r
+
+      )\r
+
+      SELECT\r
+
+      \    gender,\r
+
+      \    SUM(biaya) pendapatan\r
+
+      FROM col_biaya\r
+
+      GROUP BY gender\r
+
+      ORDER BY biaya DESC"
+    metadata: {}
+  - kind: 2
+    languageId: sql
+    value: "-- Pivot Table layanan dengan gender\r
+
+      SELECT\r
+
+      \    layanan,\r
+
+      \    COUNT(*) FILTER(WHERE gender='L') Laki_laki,\r
+
+      \    COUNT(*) FILTER(WHERE gender='P') Perempuan,\r
+
+      \    COUNT(*) freq\r
+
+      FROM pelanggan\r
+
+      GROUP BY layanan\r
+
+      ORDER BY freq DESC"
+    metadata: {}
+  - kind: 2
+    languageId: sql
     value: "-- Membuat pareto Chart per layanan Frequensi\r
 
       \r
@@ -116,6 +174,48 @@ cells:
     metadata: {}
   - kind: 2
     languageId: sql
+    value: "-- Timeline Pendapatan per tahun-bulan\r
+
+      WITH col_biaya AS(\r
+
+      SELECT\r
+
+      \    *,\r
+
+      \    CASE layanan\r
+
+      \        WHEN 'Potong Rambut' THEN 30000\r
+
+      \        WHEN 'Cuci Rambut'   THEN 20000\r
+
+      \        WHEN 'Kreambath'     THEN 50000\r
+
+      \        ELSE  25000\r
+
+      \    END biaya\r
+
+      FROM pelanggan\r
+
+      )\r
+
+      SELECT\r
+
+      \    strftime('%Y-%m',tanggal_kunjungan) bulan,\r
+
+      \    COUNT(*) freq_pelanggan,\r
+
+      \    SUM(biaya) pendapatan,\r
+
+      \    ROUND(AVG(SUM(biaya)) OVER (),2) rata_rata\r
+
+      FROM col_biaya\r
+
+      GROUP BY bulan\r
+
+      ORDER BY bulan ASC"
+    metadata: {}
+  - kind: 2
+    languageId: sql
     value: "-- Mencari Hari mana yang paling sering ada pelanggan\r
 
       SELECT \r
@@ -137,6 +237,12 @@ cells:
       \          WHEN '6' THEN 'Sabtu'\r
 
       \          END AS Hari,\r
+
+      \   ROUND(COUNT(*) FILTER (WHERE gender = 'L')*100.0/COUNT(*),2) || ' %'
+      Laki_Laki,\r
+
+      \   ROUND(COUNT(*) FILTER (WHERE gender = 'P')*100.0/COUNT(*),2) || ' %'
+      Perempuan,\r
 
       \   COUNT(*) AS total,\r
 
@@ -302,6 +408,36 @@ cells:
       \    COUNT(*) FILTER (WHERE metode_pembayaran = 'Transfer') Transfer,\r
 
       \    COUNT(*) Grand_Total\r
+
+      FROM pelanggan\r
+
+      GROUP BY 1"
+    metadata: {}
+  - kind: 2
+    languageId: sql
+    value: "-- Membuat Pivot Table untuk gender usia group\r
+
+      SELECT\r
+
+      \    CASE\r
+
+      \        WHEN usia < 15 THEN '<15'\r
+
+      \        WHEN usia BETWEEN 15 AND 29 THEN '15-29'\r
+
+      \        WHEN usia BETWEEN 30 AND 44 THEN '30-44'\r
+
+      \        WHEN usia BETWEEN 45 AND 60 THEN '45-60'\r
+
+      \        ELSE '>60'\r
+
+      \    END AS group_usia,\r
+
+      \    COUNT(*) FILTER (WHERE gender = 'L') Laki_Laki,\r
+
+      \    COUNT(*) FILTER (WHERE gender = 'P') Perempuan,\r
+
+      \    COUNT(*) Grand_total\r
 
       FROM pelanggan\r
 
