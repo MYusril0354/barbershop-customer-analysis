@@ -15,10 +15,6 @@ cells:
     metadata: {}
   - kind: 2
     languageId: sql
-    value: ""
-    metadata: {}
-  - kind: 2
-    languageId: sql
     value: "-- Membuat Pivot Table Perihal gender dengan layanan yang mana yang
       paling laris\r
 
