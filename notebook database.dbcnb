@@ -13,6 +13,10 @@ cells:
 
       SELECT COUNT(*)[Total Data] FROM pelanggan;"
     metadata: {}
+  - kind: 1
+    languageId: markdown
+    value: Pivot Layanan
+    metadata: {}
   - kind: 2
     languageId: sql
     value: "-- Membuat Pivot Table Perihal gender dengan layanan yang mana yang
@@ -117,56 +121,9 @@ cells:
 
       ORDER BY freq DESC"
     metadata: {}
-  - kind: 2
-    languageId: sql
-    value: "-- Membuat pareto Chart per layanan Frequensi\r
-
-      \r
-
-      WITH freq_1 AS(\r
-
-      \    SELECT\r
-
-      \        layanan,\r
-
-      \        COUNT(*) freq\r
-
-      \    FROM pelanggan\r
-
-      \    GROUP BY layanan\r
-
-      \    ORDER BY freq DESC\r
-
-      ),\r
-
-      cumul_1 AS(\r
-
-      \    SELECT \r
-
-      \        layanan,\r
-
-      \        freq,\r
-
-      \        SUM(freq) OVER(ORDER BY freq DESC ROWS BETWEEN UNBOUNDED
-      PRECEDING AND CURRENT ROW) cumul,\r
-
-      \        SUM(freq) OVER() grand_total\r
-
-      \    FROM freq_1 \r
-
-      \    ORDER BY freq DESC\r
-
-      )\r
-
-      SELECT\r
-
-      \    layanan,\r
-
-      \    freq,\r
-
-      \    cumul*100.0/grand_total cumullative_percentage\r
-
-      FROM cumul_1"
+  - kind: 1
+    languageId: markdown
+    value: Timeline
     metadata: {}
   - kind: 2
     languageId: sql
@@ -198,9 +155,9 @@ cells:
 
       \    strftime('%Y-%m',tanggal_kunjungan) bulan,\r
 
-      \    COUNT(*) freq_pelanggan,\r
-
       \    SUM(biaya) pendapatan,\r
+
+      \    COUNT(*) freq_pelanggan,\r
 
       \    ROUND(AVG(SUM(biaya)) OVER (),2) rata_rata\r
 
@@ -278,6 +235,10 @@ cells:
 
       ORDER BY estimasi_revenue DESC"
     metadata: {}
+  - kind: 1
+    languageId: markdown
+    value: Pareto Chart
+    metadata: {}
   - kind: 2
     languageId: sql
     value: "-- Membuat Pareto chart untuk berdasarkan pendapatan custom harga
@@ -339,6 +300,61 @@ cells:
       \    ROUND(cumul*100.00/grand_total,2) percentage_cumul \r
 
       FROM revenue_cum_tot"
+    metadata: {}
+  - kind: 2
+    languageId: sql
+    value: "-- Membuat pareto Chart per layanan Frequensi\r
+
+      \r
+
+      WITH freq_1 AS(\r
+
+      \    SELECT\r
+
+      \        layanan,\r
+
+      \        COUNT(*) freq\r
+
+      \    FROM pelanggan\r
+
+      \    GROUP BY layanan\r
+
+      \    ORDER BY freq DESC\r
+
+      ),\r
+
+      cumul_1 AS(\r
+
+      \    SELECT \r
+
+      \        layanan,\r
+
+      \        freq,\r
+
+      \        SUM(freq) OVER(ORDER BY freq DESC ROWS BETWEEN UNBOUNDED
+      PRECEDING AND CURRENT ROW) cumul,\r
+
+      \        SUM(freq) OVER() grand_total\r
+
+      \    FROM freq_1 \r
+
+      \    ORDER BY freq DESC\r
+
+      )\r
+
+      SELECT\r
+
+      \    layanan,\r
+
+      \    freq,\r
+
+      \    cumul*100.0/grand_total cumullative_percentage\r
+
+      FROM cumul_1"
+    metadata: {}
+  - kind: 1
+    languageId: markdown
+    value: Pivot Usia
     metadata: {}
   - kind: 2
     languageId: sql
