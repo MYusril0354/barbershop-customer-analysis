@@ -5,13 +5,21 @@ cells:
     metadata: {}
   - kind: 2
     languageId: sql
-    value: "-- showing the data schema\r
+    value: "-- Lihat Data Schema\r
 
-      SELECT * FROM pelanggan LIMIT 5"
+      SELECT * FROM pelanggan LIMIT 5;\r
+
+      -- Lihat Total Data\r
+
+      SELECT COUNT(*)[Total Data] FROM pelanggan;"
     metadata: {}
   - kind: 2
     languageId: sql
-    value: "-- finding aggregation of female (p) and male (l) \r
+    value: ""
+    metadata: {}
+  - kind: 2
+    languageId: sql
+    value: "-- Mencari Agregasi dari pengunjung berdasarkan Gender\r
 
       SELECT\r
 
@@ -27,7 +35,7 @@ cells:
     metadata: {}
   - kind: 2
     languageId: sql
-    value: "-- Making Pareto Chart of per layanan\r
+    value: "-- Membuat pareto Chart per layanan Frequensi\r
 
       \r
 
@@ -80,7 +88,9 @@ cells:
     languageId: sql
     value: "-- Mencari Hari mana yang paling sering ada pelanggan\r
 
-      SELECT CASE strftime('%w', tanggal_kunjungan)\r
+      SELECT \r
+
+      \   CASE strftime('%w', tanggal_kunjungan)\r
 
       \          WHEN '0' THEN 'Minggu'\r
 
@@ -98,16 +108,109 @@ cells:
 
       \          END AS Hari,\r
 
-      \       COUNT(*) AS total,\r
+      \   COUNT(*) AS total,\r
 
-      \       ROUND(COUNT(*)*100.00 /SUM(COUNT(*)) OVER(),2) || ' %' as
-      Prosentase\r
+      \   COUNT(*)*100.00 /SUM(COUNT(*)) OVER() AS Prosentase\r
 
       FROM pelanggan\r
 
       GROUP BY Hari\r
 
       ORDER BY Total DESC"
+    metadata: {}
+  - kind: 2
+    languageId: sql
+    value: "-- Mencari Estimasi Pendapatan dengan custom harga\r
+
+      SELECT \r
+
+      \     layanan,\r
+
+      \     COUNT(*)[Jumlah],\r
+
+      \     CASE layanan\r
+
+      \          WHEN 'Potong Rambut' THEN COUNT(*) * 30000\r
+
+      \          WHEN 'Cuci Rambut'   THEN COUNT(*) * 20000\r
+
+      \          WHEN 'Kreambath'     THEN COUNT(*) * 50000\r
+
+      \          ELSE COUNT(*) * 25000\r
+
+      \     END estimasi_revenue\r
+
+      FROM pelanggan\r
+
+      GROUP BY layanan\r
+
+      ORDER BY estimasi_revenue DESC"
+    metadata: {}
+  - kind: 2
+    languageId: sql
+    value: "-- Membuat Pareto chart untuk berdasarkan pendapatan custom harga
+      menggunakan CTE\r
+
+      WITH revenue AS(\r
+
+      SELECT \r
+
+      \    layanan,\r
+
+      \    COUNT(*)[Jumlah],\r
+
+      \    CASE layanan\r
+
+      \        WHEN 'Potong Rambut' THEN COUNT(*) * 30000\r
+
+      \        WHEN 'Cuci Rambut'   THEN COUNT(*) * 20000\r
+
+      \        WHEN 'Kreambath'     THEN COUNT(*) * 50000\r
+
+      \        ELSE COUNT(*) * 25000\r
+
+      \    END estimasi_revenue\r
+
+      FROM pelanggan\r
+
+      GROUP BY layanan\r
+
+      ORDER BY estimasi_revenue DESC\r
+
+      ),\r
+
+      revenue_cum_tot AS(\r
+
+      SELECT\r
+
+      \    layanan,\r
+
+      \    jumlah,\r
+
+      \    estimasi_revenue,\r
+
+      \    SUM(estimasi_revenue) OVER(ORDER BY estimasi_revenue DESC ROWS
+      BETWEEN UNBOUNDED PRECEDING AND CURRENT ROW) cumul,\r
+
+      \    SUM(estimasi_revenue) OVER() grand_total\r
+
+      FROM revenue\r
+
+      )\r
+
+      SELECT\r
+
+      \    layanan,\r
+
+      \    estimasi_revenue,\r
+
+      \    ROUND(cumul*100.00/grand_total,2) percentage_cumul \r
+
+      FROM revenue_cum_tot"
+    metadata: {}
+  - kind: 2
+    languageId: sql
+    value: ""
     metadata: {}
 metadata:
   conn:
