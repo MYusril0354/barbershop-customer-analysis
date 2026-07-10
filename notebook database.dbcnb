@@ -19,15 +19,45 @@ cells:
     metadata: {}
   - kind: 2
     languageId: sql
-    value: "-- Mencari Agregasi dari pengunjung berdasarkan Gender\r
+    value: "-- Membuat Pivot Table Perihal gender dengan layanan yang mana yang
+      paling laris\r
 
       SELECT\r
 
       \    gender,\r
 
-      \    COUNT(*) total,\r
+      \    COUNT(*) FILTER (WHERE layanan = 'Potong Rambut') Potong_Rambut,\r
 
-      \    COUNT(*)*100.0/SUM(COUNT(*)) OVER() || '%' percent\r
+      \    COUNT(*) FILTER (WHERE layanan = 'Cukur') Cukur,\r
+
+      \    COUNT(*) FILTER (WHERE layanan = 'Cat Rambut') Cat_Rambut,\r
+
+      \    COUNT(*) FILTER (WHERE layanan = 'Facial') Facial,\r
+
+      \    COUNT(*) FILTER (WHERE layanan = 'Creambath') Creambath,\r
+
+      \    COUNT(*) Grand_Total\r
+
+      FROM pelanggan\r
+
+      GROUP BY gender"
+    metadata: {}
+  - kind: 2
+    languageId: sql
+    value: "-- Membuat Pivot Table Perihal gender dengan metode pembayaran yang mana
+      yang paling sering digunakan\r
+
+      SELECT\r
+
+      \    gender,\r
+
+      \    COUNT(*) FILTER (WHERE metode_pembayaran = 'E-Wallet') E_Wallet,\r
+
+      \    COUNT(*) FILTER (WHERE metode_pembayaran = 'Tunai') Tunai,\r
+
+      \    COUNT(*) FILTER (WHERE metode_pembayaran = 'Transfer') Transfer,\r
+
+      \    COUNT(*) Grand_Total\r
 
       FROM pelanggan\r
 
@@ -239,11 +269,43 @@ cells:
 
       \    COUNT(*) FILTER (WHERE layanan = 'Creambath') Creambath,\r
 
-      \    COUNT(*) Grand Total\r
+      \    COUNT(*) Grand_Total\r
 
       FROM pelanggan\r
 
       GROUP BY 1\r\n"
+    metadata: {}
+  - kind: 2
+    languageId: sql
+    value: "-- Membuat Pivot Table untuk Metode Pembayaran\r
+
+      SELECT\r
+
+      \    CASE\r
+
+      \        WHEN usia < 15 THEN '<15'\r
+
+      \        WHEN usia BETWEEN 15 AND 29 THEN '15-29'\r
+
+      \        WHEN usia BETWEEN 30 AND 44 THEN '30-44'\r
+
+      \        WHEN usia BETWEEN 45 AND 60 THEN '45-60'\r
+
+      \        ELSE '>60'\r
+
+      \    END AS group_usia,\r
+
+      \    COUNT(*) FILTER (WHERE metode_pembayaran = 'E-Wallet') E_Wallet,\r
+
+      \    COUNT(*) FILTER (WHERE metode_pembayaran = 'Tunai') Tunai,\r
+
+      \    COUNT(*) FILTER (WHERE metode_pembayaran = 'Transfer') Transfer,\r
+
+      \    COUNT(*) Grand_Total\r
+
+      FROM pelanggan\r
+
+      GROUP BY 1"
     metadata: {}
 metadata:
   conn:
