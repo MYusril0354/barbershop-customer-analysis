@@ -210,7 +210,8 @@ cells:
     metadata: {}
   - kind: 2
     languageId: sql
-    value: "-- Mencari Frekuensi Group Usia\r
+    value: "-- Membuat Pivot table untuk mencari layanan yang paling laku di rentang
+      usia\r
 
       SELECT\r
 
@@ -228,7 +229,17 @@ cells:
 
       \    END AS group_usia,\r
 
-      \    COUNT(*) Total\r
+      \    COUNT(*) FILTER (WHERE layanan = 'Potong Rambut') Potong_Rambut,\r
+
+      \    COUNT(*) FILTER (WHERE layanan = 'Cukur') Cukur,\r
+
+      \    COUNT(*) FILTER (WHERE layanan = 'Cat Rambut') Cat_Rambut,\r
+
+      \    COUNT(*) FILTER (WHERE layanan = 'Facial') Facial,\r
+
+      \    COUNT(*) FILTER (WHERE layanan = 'Creambath') Creambath,\r
+
+      \    COUNT(*) Grand Total\r
 
       FROM pelanggan\r
 
