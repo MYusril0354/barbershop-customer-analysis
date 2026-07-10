@@ -210,7 +210,29 @@ cells:
     metadata: {}
   - kind: 2
     languageId: sql
-    value: ""
+    value: "-- Mencari Frekuensi Group Usia\r
+
+      SELECT\r
+
+      \    CASE\r
+
+      \        WHEN usia < 15 THEN '<15'\r
+
+      \        WHEN usia BETWEEN 15 AND 29 THEN '15-29'\r
+
+      \        WHEN usia BETWEEN 30 AND 44 THEN '30-44'\r
+
+      \        WHEN usia BETWEEN 45 AND 60 THEN '45-60'\r
+
+      \        ELSE '>60'\r
+
+      \    END AS group_usia,\r
+
+      \    COUNT(*) Total\r
+
+      FROM pelanggan\r
+
+      GROUP BY 1\r\n"
     metadata: {}
 metadata:
   conn:
