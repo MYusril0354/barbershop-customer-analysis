@@ -75,11 +75,11 @@ cells:
 
       \    CASE layanan\r
 
-      \        WHEN 'Potong Rambut' THEN 30000\r
+      \        WHEN 'Potong Rambut' THEN 15000\r
 
-      \        WHEN 'Cuci Rambut'   THEN 20000\r
+      \        WHEN 'Cukur'   THEN 10000\r
 
-      \        WHEN 'Kreambath'     THEN 50000\r
+      \        WHEN 'Creambath'     THEN 50000\r
 
       \        ELSE  25000\r
 
@@ -137,11 +137,11 @@ cells:
 
       \    CASE layanan\r
 
-      \        WHEN 'Potong Rambut' THEN 30000\r
+      \        WHEN 'Potong Rambut' THEN 15000\r
 
-      \        WHEN 'Cuci Rambut'   THEN 20000\r
+      \        WHEN 'Cukur'   THEN 10000\r
 
-      \        WHEN 'Kreambath'     THEN 50000\r
+      \        WHEN 'Creambath'     THEN 50000\r
 
       \        ELSE  25000\r
 
@@ -159,7 +159,51 @@ cells:
 
       \    COUNT(*) freq_pelanggan,\r
 
-      \    ROUND(AVG(SUM(biaya)) OVER (),2) rata_rata\r
+      \    ROUND(AVG(SUM(biaya)) OVER (),2) rata_rata,\r
+
+      \    ROUND((SUM(biaya) - LAG(SUM(biaya)) OVER(ORDER BY
+      strftime('%Y-%m',tanggal_kunjungan)))*100.0/ SUM(biaya),2) mom_growth \r
+
+      FROM col_biaya\r
+
+      GROUP BY bulan\r
+
+      ORDER BY bulan ASC"
+    metadata: {}
+  - kind: 2
+    languageId: sql
+    value: "-- Timeline Pendapatan per tahun-bulan\r
+
+      WITH col_biaya AS(\r
+
+      SELECT\r
+
+      \    *,\r
+
+      \    CASE layanan\r
+
+      \        WHEN 'Potong Rambut' THEN 15000\r
+
+      \        WHEN 'Cukur'   THEN 10000\r
+
+      \        WHEN 'Creambath'     THEN 50000\r
+
+      \        ELSE  25000\r
+
+      \    END biaya\r
+
+      FROM pelanggan\r
+
+      )\r
+
+      SELECT\r
+
+      \    strftime('%Y-%m',tanggal_kunjungan) bulan,\r
+
+      \    SUM(biaya) pendapatan,\r
+
+      \    (SUM(biaya) - LAG(SUM(biaya)) OVER(ORDER BY
+      strftime('%Y-%m',tanggal_kunjungan)))*100.0/ SUM(biaya)\r
 
       FROM col_biaya\r
 
@@ -221,9 +265,9 @@ cells:
 
       \          WHEN 'Potong Rambut' THEN COUNT(*) * 30000\r
 
-      \          WHEN 'Cuci Rambut'   THEN COUNT(*) * 20000\r
+      \          WHEN 'Cukur'   THEN COUNT(*) * 10000\r
 
-      \          WHEN 'Kreambath'     THEN COUNT(*) * 50000\r
+      \          WHEN 'Creambath'     THEN COUNT(*) * 50000\r
 
       \          ELSE COUNT(*) * 25000\r
 
@@ -256,9 +300,9 @@ cells:
 
       \        WHEN 'Potong Rambut' THEN COUNT(*) * 30000\r
 
-      \        WHEN 'Cuci Rambut'   THEN COUNT(*) * 20000\r
+      \        WHEN 'Cukur'   THEN COUNT(*) * 10000\r
 
-      \        WHEN 'Kreambath'     THEN COUNT(*) * 50000\r
+      \        WHEN 'Creambath'     THEN COUNT(*) * 50000\r
 
       \        ELSE COUNT(*) * 25000\r
 
@@ -454,6 +498,144 @@ cells:
       FROM pelanggan\r
 
       GROUP BY 1"
+    metadata: {}
+  - kind: 1
+    languageId: markdown
+    value: Kolom Nama
+    metadata: {}
+  - kind: 2
+    languageId: sql
+    value: "-- Mencari nama yang paling lama dari awal kunjungan sampai hari ini\r
+
+      SELECT\r
+
+      \    nama,\r
+
+      \    MIN(tanggal_kunjungan) kunjungan_pertama,\r
+
+      \    JULIANDAY(MAX(MAX(tanggal_kunjungan)) OVER()) -
+      JULIANDAY(MIN(tanggal_kunjungan)) Hari\r
+
+      FROM pelanggan\r
+
+      GROUP BY nama\r
+
+      ORDER BY Hari DESC"
+    metadata: {}
+  - kind: 2
+    languageId: sql
+    value: "-- Membuat freq pelanggan dan hari dari kunjungan terakhir\r
+
+      SELECT\r
+
+      \    nama,\r
+
+      \    COUNT(*) FILTER (WHERE layanan = 'Potong Rambut') Potong_Rambut,\r
+
+      \    COUNT(*) FILTER (WHERE layanan = 'Cukur') Cukur,\r
+
+      \    COUNT(*) FILTER (WHERE layanan = 'Cat Rambut') Cat_Rambut,\r
+
+      \    COUNT(*) FILTER (WHERE layanan = 'Facial') Facial,\r
+
+      \    COUNT(*) FILTER (WHERE layanan = 'Creambath') Creambath,\r
+
+      \    COUNT(*) total_kunjungan,\r
+
+      \    JULIANDAY(MAX(MAX(tanggal_kunjungan)) OVER()) -
+      JULIANDAY(MAX(tanggal_kunjungan)) Hari_dari_kunjungan_treakhir\r
+
+      FROM pelanggan\r
+
+      GROUP BY nama\r
+
+      ORDER BY total_kunjungan DESC"
+    metadata: {}
+  - kind: 2
+    languageId: sql
+    value: "-- membuat beberapa table sementara untuk agregasi layanan yang paling
+      di minati di setiap nama\r
+
+      WITH per_pelanggan AS (\r
+
+      \    SELECT\r
+
+      \        nama,\r
+
+      \        layanan,\r
+
+      \        COUNT(*) AS jumlah\r
+
+      \    FROM pelanggan\r
+
+      \    GROUP BY nama, layanan\r
+
+      ),\r
+
+      peringkat AS (\r
+
+      \    SELECT\r
+
+      \        nama,\r
+
+      \        layanan,\r
+
+      \        jumlah,\r
+
+      \        ROW_NUMBER() OVER (PARTITION BY nama ORDER BY jumlah DESC,
+      layanan) AS rn\r
+
+      \    FROM per_pelanggan\r
+
+      ),\r
+
+      favorit_cte AS(\r
+
+      SELECT\r
+
+      \    p.nama,\r
+
+      \    r.layanan AS layanan_favorit,\r
+
+      \    r.jumlah AS jumlah_favorit,\r
+
+      \    COUNT(*) total_kunjungan,\r
+
+      \    JULIANDAY(MAX(MAX(p.tanggal_kunjungan)) OVER()) -
+      JULIANDAY(MAX(p.tanggal_kunjungan)) Hari_dari_kunjungan_terakhir\r
+
+      FROM pelanggan p\r
+
+      LEFT JOIN peringkat r ON p.nama = r.nama AND r.rn = 1\r
+
+      GROUP BY p.nama, r.layanan, r.jumlah\r
+
+      ORDER BY total_kunjungan DESC\r
+
+      )\r
+
+      -- Memutuskan orang yang disitu dapat promo dengan sarat total kunjungan
+      lebih dari 10 dan lebih dari 30 hari dari kunjungan terakhir\r
+
+      SELECT\r
+
+      \    nama,\r
+
+      \    layanan_favorit,\r
+
+      \    jumlah_favorit,\r
+
+      \    total_kunjungan,\r
+
+      \    Hari_dari_kunjungan_terakhir\r
+
+      FROM favorit_cte\r
+
+      WHERE total_kunjungan >10 and Hari_dari_kunjungan_terakhir>30"
+    metadata: {}
+  - kind: 2
+    languageId: sql
+    value: ""
     metadata: {}
 metadata:
   conn:
