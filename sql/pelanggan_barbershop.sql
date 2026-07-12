@@ -42,11 +42,11 @@ ORDER BY Total DESC;
 SELECT layanan,
        COUNT(*)[Jumlah],
        CASE layanan
-            WHEN 'Potong Rambut' THEN COUNT(*) * 30000
-            WHEN 'Cuci Rambut'   THEN COUNT(*) * 20000
-            WHEN 'Kreambath'     THEN COUNT(*) * 50000
-            ELSE COUNT(*) * 25000
-       END AS estimasi_revenue
+              WHEN 'Potong Rambut' THEN COUNT(*) * 30000
+              WHEN 'Cukur'   THEN COUNT(*) * 10000
+              WHEN 'Creambath'     THEN COUNT(*) * 50000
+              ELSE COUNT(*) * 25000
+       END estimasi_revenue
 FROM pelanggan
 GROUP BY layanan
 ORDER BY estimasi_revenue DESC;
