@@ -42,6 +42,10 @@ cells:
 
       GROUP BY gender"
     metadata: {}
+  - kind: 1
+    languageId: markdown
+    value: Pivot metode Pembayaran
+    metadata: {}
   - kind: 2
     languageId: sql
     value: "-- Membuat Pivot Table Perihal gender dengan metode pembayaran yang mana
@@ -62,6 +66,10 @@ cells:
       FROM pelanggan\r
 
       GROUP BY gender"
+    metadata: {}
+  - kind: 1
+    languageId: markdown
+    value: Generate Pendapatan per Gender
     metadata: {}
   - kind: 2
     languageId: sql
@@ -93,13 +101,19 @@ cells:
 
       \    gender,\r
 
-      \    SUM(biaya) pendapatan\r
+      \    SUM(biaya) pendapatan,\r
+
+      \    SUM(biaya)*100.00/SUM(SUM(biaya)) OVER () prosentase\r
 
       FROM col_biaya\r
 
       GROUP BY gender\r
 
       ORDER BY biaya DESC"
+    metadata: {}
+  - kind: 1
+    languageId: markdown
+    value: Pivot Layanan
     metadata: {}
   - kind: 2
     languageId: sql
@@ -202,8 +216,9 @@ cells:
 
       \    SUM(biaya) pendapatan,\r
 
-      \    (SUM(biaya) - LAG(SUM(biaya)) OVER(ORDER BY
-      strftime('%Y-%m',tanggal_kunjungan)))*100.0/ SUM(biaya)\r
+      \    COUNT(*) freq_pelanggan,\r
+
+      \    SUM(biaya)/COUNT(*) pendapatan_dibagi_freq\r
 
       FROM col_biaya\r
 
@@ -211,9 +226,13 @@ cells:
 
       ORDER BY bulan ASC"
     metadata: {}
+  - kind: 1
+    languageId: markdown
+    value: Cari hari mana yang paling sering ada pelanggan dan paling laris
+    metadata: {}
   - kind: 2
     languageId: sql
-    value: "-- Mencari Hari mana yang paling sering ada pelanggan\r
+    value: "-- Mencari Hari mana yang paling laris dan sering ada pelanggann\r
 
       SELECT \r
 
@@ -243,13 +262,25 @@ cells:
 
       \   COUNT(*) AS total,\r
 
-      \   COUNT(*)*100.00 /SUM(COUNT(*)) OVER() AS Prosentase\r
+      \   COUNT(*)*100.00 /SUM(COUNT(*)) OVER() AS Prosentase,\r
+
+      \   CASE layanan\r
+
+      \         WHEN 'Potong Rambut' THEN COUNT(*) * 30000\r
+
+      \         WHEN 'Cukur'   THEN COUNT(*) * 10000\r
+
+      \         WHEN 'Creambath'     THEN COUNT(*) * 50000\r
+
+      \         ELSE COUNT(*) * 25000\r
+
+      \   END estimasi_revenue\r
 
       FROM pelanggan\r
 
       GROUP BY Hari\r
 
-      ORDER BY Total DESC"
+      ORDER BY estimasi_revenue DESC"
     metadata: {}
   - kind: 2
     languageId: sql
@@ -551,6 +582,10 @@ cells:
 
       ORDER BY total_kunjungan DESC"
     metadata: {}
+  - kind: 1
+    languageId: markdown
+    value: "Memutuskan orang yang dikasih promo "
+    metadata: {}
   - kind: 2
     languageId: sql
     value: "-- membuat beberapa table sementara untuk agregasi layanan yang paling
@@ -633,12 +668,4 @@ cells:
 
       WHERE total_kunjungan >10 and Hari_dari_kunjungan_terakhir>30"
     metadata: {}
-  - kind: 2
-    languageId: sql
-    value: ""
-    metadata: {}
-metadata:
-  conn:
-    id: 23d2f8ea26864590
-    name: databarber.db
-  database: main
+metadata: {}
